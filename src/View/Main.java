@@ -11,7 +11,7 @@ public class Main{
         Scanner sc = new Scanner(System.in);
         SistemaController controller = new SistemaController();
 
-        int opcao;
+        int opcao = 0;
 
         do {
             System.out.println("\n===MENU====");
@@ -21,7 +21,13 @@ public class Main{
             System.out.println("4-Listar projetos");
             System.out.println("5-Ver Progresso");
             System.out.println("6-Sair");
+            System.out.print("Opcao: ");
 
+            if (!sc.hasNextInt()) {
+                System.out.println("Digite um numero valido.");
+                sc.nextLine();
+                continue;
+            }
             opcao = sc.nextInt();
             sc.nextLine();
 
@@ -35,7 +41,11 @@ public class Main{
                     System.out.println("Cargo");
                     String cargo = sc.nextLine();
 
-                    controller.criarColaborador(nome, cargo);
+                    if (controller.criarColaborador(nome, cargo)) {
+                        System.out.println("Colaborador cadastrado com sucesso.");
+                    } else {
+                        System.out.println("Nao foi possivel cadastrar colaborador. Verifique os dados.");
+                    }
                     break;
 
                 case 2:
@@ -48,15 +58,34 @@ public class Main{
                     System.out.println("Prazo");
                     String prazo = sc.nextLine();
 
-                    controller.criarProjeto(nomeProjeto, desc, prazo);
+                    if (controller.criarProjeto(nomeProjeto, desc, prazo)) {
+                        System.out.println("Projeto criado com sucesso.");
+                    } else {
+                        System.out.println("Nao foi possivel criar projeto. Verifique os dados.");
+                    }
                     break;
 
                 case 3:
+                    if (controller.listarProjetos().isEmpty()) {
+                        System.out.println("Cadastre um projeto antes de criar tarefas.");
+                        break;
+                    }
+
+                    if (controller.listarColaboradores().isEmpty()) {
+                        System.out.println("Cadastre um colaborador antes de criar tarefas.");
+                        break;
+                    }
+
                     System.out.println("Escolha o projeto (index): ");
                     for (int i = 0; i < controller.listarProjetos().size(); i++) {
-                        System.out.println(i + "-" + controller.listarProjetos().get(i).getNome());
+                        System.out.println(i + " - " + controller.listarProjetos().get(i).getNome());
                     }
-                    int ProjetoIndex = sc.nextInt();
+                    if (!sc.hasNextInt()) {
+                        System.out.println("Indice de projeto invalido.");
+                        sc.nextLine();
+                        break;
+                    }
+                    int projetoIndex = sc.nextInt();
                     sc.nextLine();
 
                     System.out.println("Nome da tarefa:");
@@ -72,17 +101,35 @@ public class Main{
                     for (Colaborador c : controller.listarColaboradores()) {
                         System.out.println(c);
                     }
+                    if (!sc.hasNextInt()) {
+                        System.out.println("ID de colaborador invalido.");
+                        sc.nextLine();
+                        break;
+                    }
                     int colaboradorId = sc.nextInt();
+                    sc.nextLine();
 
-                    controller.criarTarefa(ProjetoIndex, nomeTarefa, descTarefa, prazoTarefa, colaboradorId);
+                    if (controller.criarTarefa(projetoIndex, nomeTarefa, descTarefa, prazoTarefa, colaboradorId)) {
+                        System.out.println("Tarefa criada com sucesso.");
+                    } else {
+                        System.out.println("Nao foi possivel criar tarefa. Verifique projeto, colaborador e campos.");
+                    }
                     break;
 
                 case 4:
+                    if (controller.listarProjetos().isEmpty()) {
+                        System.out.println("Nenhum projeto cadastrado.");
+                        break;
+                    }
                     for (Projeto p : controller.listarProjetos()) {
-                        System.out.println(p.getNome());
+                        System.out.println(p);
                     }
                     break;
                 case 5:
+                    if (controller.listarProjetos().isEmpty()) {
+                        System.out.println("Nenhum projeto cadastrado.");
+                        break;
+                    }
                     for (Projeto p : controller.listarProjetos()) {
                         p.exibirProgresso();
                     }
@@ -91,6 +138,10 @@ public class Main{
                 case 6:
                     System.out.println("Encerrando...");
                     break;
+
+                default:
+                    System.out.println("Opcao invalida.");
+                    break;
             }
 
         } while(opcao !=6);
@@ -98,4 +149,3 @@ public class Main{
         sc.close();
     }
 }
-
