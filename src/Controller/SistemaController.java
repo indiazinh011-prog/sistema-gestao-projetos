@@ -1,88 +1,63 @@
 package Controller;
-
 import Model.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 public class SistemaController {
-
     private List<Projeto> projetos = new ArrayList<>();
-    private List<Colaborador> colaboradores = new ArrayList<>();
-
-    // ==================== COLABORADOR =======================
-
-    public boolean criarColaborador(String nome, String cargo) {
-        if (nome == null || nome.isBlank() || cargo == null || cargo.isBlank()) {
-            return false;
-        }
-
-        Colaborador c = new Colaborador(colaboradores.size() + 1, nome.trim(), cargo.trim());
-        colaboradores.add(c);
+    private List<Usuario> usuarios = new ArrayList<>();
+    private List<Equipe> equipes = new ArrayList<>();
+    public boolean criarUsuario(String nome, String cpf, String email, String cargo, String login, String senha, String perfil) {
+        if (nome == null || nome.isBlank() || cpf == null || cpf.isBlank() || email == null || email.isBlank()
+            || cargo == null || cargo.isBlank() || login == null || login.isBlank()
+            || senha == null || senha.isBlank() || perfil == null || perfil.isBlank()) return false;
+        Perfil p;
+        try { p = Perfil.valueOf(perfil.toUpperCase()); } catch (IllegalArgumentException e) { return false; }
+        Usuario u = new Usuario(usuarios.size() + 1, nome.trim(), cpf.trim(), email.trim(), cargo.trim(), login.trim(), senha.trim(), p);
+        usuarios.add(u);
         return true;
     }
-
-    public List<Colaborador> listarColaboradores() {
-        return Collections.unmodifiableList(colaboradores);
-    }
-
-    public Colaborador buscarColaborador(int id) {
-        for (Colaborador c : colaboradores) {
-            if (c.getId() == id) {
-                return c;
-            }
-        }
+    public List<Usuario> listarUsuarios() { return Collections.unmodifiableList(usuarios); }
+    public Usuario buscarUsuario(int id) {
+        for (Usuario u : usuarios) if (u.getId() == id) return u;
         return null;
     }
-
-    // ====================== PROJETO ==========================
-
-    public boolean criarProjeto(String nome, String descricao, String prazo) {
+    public boolean criarProjeto(String nome, String descricao, String dataInicio, String dataTermino, int gerenteId) {
         if (nome == null || nome.isBlank() || descricao == null || descricao.isBlank()
-            || prazo == null || prazo.isBlank()) {
-            return false;
-        }
-
-        Projeto p = new Projeto(projetos.size() + 1, nome.trim(), descricao.trim(), prazo.trim());
+            || dataInicio == null || dataInicio.isBlank() || dataTermino == null || dataTermino.isBlank()) return false;
+        Usuario gerente = buscarUsuario(gerenteId);
+        if (gerente == null) return false;
+        Projeto p = new Projeto(projetos.size() + 1, nome.trim(), descricao.trim(), dataInicio.trim(), dataTermino.trim(), gerente);
         projetos.add(p);
         return true;
     }
-
-    public List<Projeto> listarProjetos() {
-        return Collections.unmodifiableList(projetos);
-    }
-
+    public List<Projeto> listarProjetos() { return Collections.unmodifiableList(projetos); }
     public Projeto buscarProjeto(int index) {
-        if (index >= 0 && index < projetos.size()) {
-            return projetos.get(index);
-        }
-
+        if (index >= 0 && index < projetos.size()) return projetos.get(index);
         return null;
     }
-
-    // ========================= TAREFA ==========================
-
-    public boolean criarTarefa(int projetoIndex, String nome, String descricao, String prazo, int colaboradorId) {
+    public boolean criarTarefa(int projetoIndex, String nome, String descricao, String prazo, int usuarioId) {
         Projeto projeto = buscarProjeto(projetoIndex);
-        Colaborador colaborador = buscarColaborador(colaboradorId);
-
-        if (projeto == null || colaborador == null) {
-            return false;
-        }
-
-        if (nome == null || nome.isBlank() || descricao == null || descricao.isBlank()
-            || prazo == null || prazo.isBlank()) {
-            return false;
-        }
-
-        Tarefa t = new Tarefa(
-            projeto.getTarefas().size() + 1,
-            nome.trim(),
-            descricao.trim(),
-            prazo.trim(),
-            colaborador
-        );
+        Usuario usuario = buscarUsuario(usuarioId);
+        if (projeto == null || usuario == null) return false;
+        if (nome == null || nome.isBlank() || descricao == null || descricao.isBlank() || prazo == null || prazo.isBlank()) return false;
+        Tarefa t = new Tarefa(projeto.getTarefas().size() + 1, nome.trim(), descricao.trim(), prazo.trim(), usuario);
         projeto.adicionarTarefa(t);
         return true;
     }
+    public boolean criarEquipe(String nome, String descricao) {
+        if (nome == null || nome.isBlank() || descricao == null || descricao.isBlank()) return false;
+        Equipe e = new Equipe(equipes.size() + 1, nome.trim(), descricao.trim());
+        equipes.add(e);
+        return true;
+    }
+    public boolean adicionarMembroEquipe(int equipeId, int usuarioId) {
+        Equipe equipe = null;
+        for (Equipe e : equipes) if (e.getId() == equipeId) { equipe = e; break; }
+        Usuario usuario = buscarUsuario(usuarioId);
+        if (equipe == null || usuario == null) return false;
+        equipe.adicionarMembro(usuario);
+        return true;
+    }
+    public List<Equipe> listarEquipes() { return Collections.unmodifiableList(equipes); }
 }
