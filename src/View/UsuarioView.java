@@ -42,7 +42,7 @@ public class UsuarioView {
         if (usuarios.isEmpty()) { System.out.println("\nNenhum usuário cadastrado."); return; }
         System.out.println("\n--- Lista de Usuários ---");
         for (Usuario u : usuarios)
-            System.out.printf("ID: %d | %s | CPF: %s | %s | Perfil: %s%n", u.getId(), u.getNome(), u.getCpf(), u.getEmail(), u.getPerfil());
+            System.out.printf("ID: %d | %s | %s | %s | Perfil: %s%n", u.getId(), u.getNome(), u.getCpf(), u.getEmail(), u.getPerfil());
     }
     private int lerInt() {
         try { return Integer.parseInt(scanner.nextLine().trim()); } catch (NumberFormatException e) { return -1; }

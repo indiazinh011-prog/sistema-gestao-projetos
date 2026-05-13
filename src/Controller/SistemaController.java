@@ -12,9 +12,9 @@ public class SistemaController {
             || cargo == null || cargo.isBlank() || login == null || login.isBlank()
             || senha == null || senha.isBlank() || perfil == null || perfil.isBlank()) return false;
         Perfil p;
-        try { p = Perfil.valueOf(perfil.toUpperCase()); } catch (IllegalArgumentException e) { return false; }
-        Usuario u = new Usuario(usuarios.size() + 1, nome.trim(), cpf.trim(), email.trim(), cargo.trim(), login.trim(), senha.trim(), p);
-        usuarios.add(u);
+        try { p = Perfil.valueOf(perfil.toUpperCase()); }
+        catch (IllegalArgumentException e) { return false; }
+        usuarios.add(new Usuario(usuarios.size() + 1, nome.trim(), cpf.trim(), email.trim(), cargo.trim(), login.trim(), senha.trim(), p));
         return true;
     }
     public List<Usuario> listarUsuarios() { return Collections.unmodifiableList(usuarios); }
@@ -27,8 +27,7 @@ public class SistemaController {
             || dataInicio == null || dataInicio.isBlank() || dataTermino == null || dataTermino.isBlank()) return false;
         Usuario gerente = buscarUsuario(gerenteId);
         if (gerente == null) return false;
-        Projeto p = new Projeto(projetos.size() + 1, nome.trim(), descricao.trim(), dataInicio.trim(), dataTermino.trim(), gerente);
-        projetos.add(p);
+        projetos.add(new Projeto(projetos.size() + 1, nome.trim(), descricao.trim(), dataInicio.trim(), dataTermino.trim(), gerente));
         return true;
     }
     public List<Projeto> listarProjetos() { return Collections.unmodifiableList(projetos); }
@@ -41,14 +40,12 @@ public class SistemaController {
         Usuario usuario = buscarUsuario(usuarioId);
         if (projeto == null || usuario == null) return false;
         if (nome == null || nome.isBlank() || descricao == null || descricao.isBlank() || prazo == null || prazo.isBlank()) return false;
-        Tarefa t = new Tarefa(projeto.getTarefas().size() + 1, nome.trim(), descricao.trim(), prazo.trim(), usuario);
-        projeto.adicionarTarefa(t);
+        projeto.adicionarTarefa(new Tarefa(projeto.getTarefas().size() + 1, nome.trim(), descricao.trim(), prazo.trim(), usuario));
         return true;
     }
     public boolean criarEquipe(String nome, String descricao) {
         if (nome == null || nome.isBlank() || descricao == null || descricao.isBlank()) return false;
-        Equipe e = new Equipe(equipes.size() + 1, nome.trim(), descricao.trim());
-        equipes.add(e);
+        equipes.add(new Equipe(equipes.size() + 1, nome.trim(), descricao.trim()));
         return true;
     }
     public boolean adicionarMembroEquipe(int equipeId, int usuarioId) {
